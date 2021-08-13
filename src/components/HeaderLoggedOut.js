@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from "axios";
 
-function HeaderLogin() {
+function HeaderLoggedOut({ setLoggedIn }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -12,6 +12,7 @@ function HeaderLogin() {
       if (response.data) {
         setUsername('')
         setPassword('')
+        setLoggedIn(true);
       } else {
         console.log(response.data, 'response.data')
       }
@@ -42,4 +43,4 @@ function HeaderLogin() {
   );
 }
 
-export default HeaderLogin;
+export default HeaderLoggedOut;
