@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from "axios";
+import { API_AXIOS_URL } from "../config";
 
 function HeaderLoggedOut({ setLoggedIn }) {
   const [username, setUsername] = useState('');
@@ -8,7 +9,7 @@ function HeaderLoggedOut({ setLoggedIn }) {
   async function submitHandler(e) {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/login', { username, password })
+      const response = await axios.post(`${API_AXIOS_URL}/login`, { username, password })
       if (response.data) {
         setUsername('')
         setPassword('')

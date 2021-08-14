@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 
 function HeaderLoggedIn({ setLoggedIn }) {
   const [avatar, setAvatar] = useState('');
@@ -27,9 +28,9 @@ function HeaderLoggedIn({ setLoggedIn }) {
         <img className="small-header-avatar" src={avatar}
              alt=""/>
       </button>
-      <a className="btn btn-sm btn-success mr-2" href="/create-post">
+      <Link className="btn btn-sm btn-success mr-2" to="/create-post">
         Create Post
-      </a>
+      </Link>
       <button onClick={handleLogin} className="btn btn-sm btn-secondary">
         Sign Out
       </button>

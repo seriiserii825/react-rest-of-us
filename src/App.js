@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Home from "./components/Home";
 import { useState } from "react";
+import CreatePost from "./pages/CreatePost";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem('complexappToken')));
@@ -16,6 +17,9 @@ function App() {
       <Switch>
         <Route path="/" exact>
           {loggedIn ? <Home/> : <HomeGuest/>}
+        </Route>
+        <Route path="/create-post">
+          <CreatePost/>
         </Route>
         <Route path="/about">
           <About/>
