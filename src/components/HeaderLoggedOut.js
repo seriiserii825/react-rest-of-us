@@ -13,6 +13,9 @@ function HeaderLoggedOut({ setLoggedIn }) {
         setUsername('')
         setPassword('')
         setLoggedIn(true);
+        localStorage.setItem('complexappToken', response.data.token);
+        localStorage.setItem('complexappUsername', response.data.username);
+        localStorage.setItem('complexappAvatar', "http://gravatar.com/avatar/48cbc7dd0568f6ac661b08776d190150");
       } else {
         console.log(response.data, 'response.data')
       }

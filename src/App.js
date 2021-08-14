@@ -5,14 +5,17 @@ import HomeGuest from "./components/HomeGuest";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
+import Home from "./components/Home";
+import { useState } from "react";
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem('complexappToken')));
   return (
     <BrowserRouter>
-      <Header/>
+      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
       <Switch>
         <Route path="/" exact>
-          <HomeGuest/>
+          {loggedIn ? <Home/> : <HomeGuest/>}
         </Route>
         <Route path="/about">
           <About/>
