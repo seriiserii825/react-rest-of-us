@@ -6,44 +6,58 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Home from "./components/Home";
-import { useState } from "react";
+import { useReducer } from "react";
 import CreatePost from "./pages/CreatePost";
 import ViewSinglePost from "./pages/ViewSinglePost";
 import FlashMessage from "./components/FlashMessage";
-import ExampleContext from "./context/ExampleContext";
+import StateContext from "./context/StateContext";
+import DispatchContext from "./context/DispatchContext";
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem('complexappToken')));
-  const [flashMessage, setFlashMessage] = useState('');
-  const value = {
-    setLoggedIn,
-    setFlashMessage
+  const initialState = {
+    loggedIn: Boolean(localStorage.getItem('complexappToken')),
+    flashMessage: ''
   }
+  const ourReducer = (state, action) => {
+    switch (action.type) {
+      case "login":
+        return { loggedIn: true, flashMessage: state.flashMessage };
+      case "logout":
+        return { loggedIn: false, flashMessage: state.flashMessage };
+      case "flashMessage":
+        return { loggedIn: state.loggedIn, flashMessage: action.value };
+      default:
+        return;
+    }
+  }
+  const [state, dispatch] = useReducer(ourReducer, initialState);
   return (
-    <ExampleContext.Provider value={value}>
-      <BrowserRouter>
-        <Header loggedIn={loggedIn}/>
-        {flashMessage !== '' && <FlashMessage msg={flashMessage}/>}
-        <Switch>
-          <Route path="/" exact>
-            {loggedIn ? <Home/> : <HomeGuest/>}
-          </Route>
-          <Route path="/create-post">
-            <CreatePost/>
-          </Route>
-          <Route path="/post/:id">
-            <ViewSinglePost/>
-          </Route>
-          <Route path="/about">
-            <About/>
-          </Route>
-          <Route path="/terms">
-            <Terms/>
-          </Route>
-        </Switch>
-        <Footer/>
-      </BrowserRouter>
-    </ExampleContext.Provider>
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        <BrowserRouter>
+          <Header/>
+          {state.flashMessage !== '' && <FlashMessage msg={state.flashMessage}/>}
+          <Switch>
+            <Route path="/" exact>
+              {state.loggedIn ? <Home/> : <HomeGuest/>}
+            </Route>
+            <Route path="/create-post">
+              <CreatePost/>
+            </Route>
+            <Route path="/post/:id">
+              <ViewSinglePost/>
+            </Route>
+            <Route path="/about">
+              <About/>
+            </Route>
+            <Route path="/terms">
+              <Terms/>
+            </Route>
+          </Switch>
+          <Footer/>
+        </BrowserRouter>
+      </DispatchContext.Provider>
+    </StateContext.Provider>
   );
 }
 

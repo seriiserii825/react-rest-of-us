@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from "react-router-dom";
-import ExampleContext from "../context/ExampleContext";
 import {withRouter} from "react-router-dom";
+import DispatchContext from "../context/DispatchContext";
 
 function HeaderLoggedIn({history}) {
+  const AppDispatch = useContext(DispatchContext);
   const [avatar, setAvatar] = useState('');
-  const {setLoggedIn} = useContext(ExampleContext);
 
   function handleLogin() {
-    setLoggedIn(false);
+    AppDispatch({type: "logout"});
     localStorage.removeItem('complexappToken');
     localStorage.removeItem('complexappUsername');
     localStorage.removeItem('complexappAvatar');

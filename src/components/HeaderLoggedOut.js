@@ -1,12 +1,12 @@
 import React, { useState, useContext } from 'react';
 import axios from "axios";
 import { API_AXIOS_URL } from "../config";
-import ExampleContext from "../context/ExampleContext";
+import DispatchContext from "../context/DispatchContext";
 
 function HeaderLoggedOut() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const { setLoggedIn } = useContext(ExampleContext);
+  const AppDispatch = useContext(DispatchContext);
 
   async function submitHandler(e) {
     e.preventDefault();
@@ -15,7 +15,7 @@ function HeaderLoggedOut() {
       if (response.data) {
         setUsername('')
         setPassword('')
-        setLoggedIn(true);
+        AppDispatch({ type: "login" });
         localStorage.setItem('complexappToken', response.data.token);
         localStorage.setItem('complexappUsername', response.data.username);
         localStorage.setItem('complexappAvatar', "http://gravatar.com/avatar/48cbc7dd0568f6ac661b08776d190150");
