@@ -2,20 +2,24 @@ import React, { useState } from 'react';
 import Page from "../layouts/Page";
 import axios from "axios";
 import { API_AXIOS_URL } from "../config";
+import { withRouter } from "react-router-dom";
 
-function CreatePost() {
+function CreatePost({ history, setFlasMessage }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
 
   async function submitHandler(e) {
     e.preventDefault();
-    await axios.post(`${API_AXIOS_URL}/create-post`, {
+    const newPost = await axios.post(`${API_AXIOS_URL}/create-post`, {
       title,
       body,
       token: localStorage.getItem('complexappToken')
     })
     setTitle('');
     setBody('');
+
+    setFlasMessage("Post was created");
+    history.push(`/post/${newPost.data}`);
   }
 
   return (
@@ -44,4 +48,5 @@ function CreatePost() {
   );
 }
 
-export default CreatePost;
+export default withRouter(CreatePost);
+
