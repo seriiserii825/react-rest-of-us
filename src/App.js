@@ -10,33 +10,40 @@ import { useState } from "react";
 import CreatePost from "./pages/CreatePost";
 import ViewSinglePost from "./pages/ViewSinglePost";
 import FlashMessage from "./components/FlashMessage";
+import ExampleContext from "./context/ExampleContext";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem('complexappToken')));
   const [flashMessage, setFlashMessage] = useState('');
+  const value = {
+    setLoggedIn,
+    setFlashMessage
+  }
   return (
-    <BrowserRouter>
-      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
-      {flashMessage !== '' && <FlashMessage msg={flashMessage}/>}
-      <Switch>
-        <Route path="/" exact>
-          {loggedIn ? <Home/> : <HomeGuest/>}
-        </Route>
-        <Route path="/create-post">
-          <CreatePost setFlasMessage={setFlashMessage}/>
-        </Route>
-        <Route path="/post/:id">
-          <ViewSinglePost/>
-        </Route>
-        <Route path="/about">
-          <About/>
-        </Route>
-        <Route path="/terms">
-          <Terms/>
-        </Route>
-      </Switch>
-      <Footer/>
-    </BrowserRouter>
+    <ExampleContext.Provider value={value}>
+      <BrowserRouter>
+        <Header loggedIn={loggedIn}/>
+        {flashMessage !== '' && <FlashMessage msg={flashMessage}/>}
+        <Switch>
+          <Route path="/" exact>
+            {loggedIn ? <Home/> : <HomeGuest/>}
+          </Route>
+          <Route path="/create-post">
+            <CreatePost/>
+          </Route>
+          <Route path="/post/:id">
+            <ViewSinglePost/>
+          </Route>
+          <Route path="/about">
+            <About/>
+          </Route>
+          <Route path="/terms">
+            <Terms/>
+          </Route>
+        </Switch>
+        <Footer/>
+      </BrowserRouter>
+    </ExampleContext.Provider>
   );
 }
 

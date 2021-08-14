@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import ExampleContext from "../context/ExampleContext";
 import Page from "../layouts/Page";
 import axios from "axios";
 import { API_AXIOS_URL } from "../config";
 import { withRouter } from "react-router-dom";
 
-function CreatePost({ history, setFlasMessage }) {
+function CreatePost({ history }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+
+  const {setFlashMessage} = useContext(ExampleContext);
 
   async function submitHandler(e) {
     e.preventDefault();
@@ -18,7 +21,8 @@ function CreatePost({ history, setFlasMessage }) {
     setTitle('');
     setBody('');
 
-    setFlasMessage("Post was created");
+    setFlashMessage("Post was created!!!");
+
     history.push(`/post/${newPost.data}`);
   }
 

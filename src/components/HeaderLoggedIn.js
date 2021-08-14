@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from "react-router-dom";
+import ExampleContext from "../context/ExampleContext";
+import {withRouter} from "react-router-dom";
 
-function HeaderLoggedIn({ setLoggedIn }) {
+function HeaderLoggedIn({history}) {
   const [avatar, setAvatar] = useState('');
+  const {setLoggedIn} = useContext(ExampleContext);
 
   function handleLogin() {
     setLoggedIn(false);
     localStorage.removeItem('complexappToken');
     localStorage.removeItem('complexappUsername');
     localStorage.removeItem('complexappAvatar');
+    history.push('/');
   }
 
   useEffect(() => {
@@ -38,4 +42,4 @@ function HeaderLoggedIn({ setLoggedIn }) {
   );
 }
 
-export default HeaderLoggedIn;
+export default withRouter(HeaderLoggedIn);
