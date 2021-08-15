@@ -20,17 +20,25 @@ function Profile(props) {
   });
 
   useEffect(() => {
+    let isMounted = true;
     async function getProfile() {
-      const response = await axios.post(
-        `${API_AXIOS_URL}/profile/${username}`,
-        {
-          token: AppState.user.token
+      try {
+        const response = await axios.post(
+          `${API_AXIOS_URL}/profile/${username}`,
+          {
+            token: AppState.user.token
+          }
+        );
+        if (isMounted) {
+          setProfileData(response.data);
         }
-      );
-      setProfileData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
     getProfile();
+
+    return () => (isMounted = false);
   }, [username, AppState.user.token]);
 
   return (

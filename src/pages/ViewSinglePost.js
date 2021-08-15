@@ -4,26 +4,24 @@ import { Link, useParams } from "react-router-dom";
 import LoadingDotsIcon from "../components/LoadingDotsIcons";
 import { API_AXIOS_URL } from "../config";
 import Page from "../layouts/Page";
+import FormatDate from "../utils/FormatDate";
 
 function ViewSinglePost(props) {
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
 
-  function postDate(date) {
-    const newDate = new Date(date);
-    return `${newDate.getDay()}/${
-      newDate.getMonth() + 1
-    }/${newDate.getFullYear()}`;
-  }
-
   useEffect(() => {
     let isMounted = true;
     async function fetchPost() {
-      const result = await axios.get(`${API_AXIOS_URL}/post/${id}`);
-      if (isMounted) {
-        setPost(result.data);
-        setLoading(false);
+      try {
+        const result = await axios.get(`${API_AXIOS_URL}/post/${id}`);
+        if (isMounted) {
+          setPost(result.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
       }
     }
     fetchPost();
@@ -65,7 +63,7 @@ function ViewSinglePost(props) {
         <Link to={`/profile/${post.author.username}`}>
           {post.author.username}
         </Link>{" "}
-        on {postDate(post.createdDate)}
+        on {FormatDate(post.createdDate)}
       </p>
 
       <div className="body-content">{post.body}</div>
