@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { API_AXIOS_URL } from "../config";
+import LoadingDotsIcon from "./LoadingDotsIcons";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -31,7 +32,7 @@ const PostList = () => {
   }, [username]);
 
   if (loading) {
-    return <h3>Loading...</h3>;
+    return <LoadingDotsIcon />;
   }
 
   return (

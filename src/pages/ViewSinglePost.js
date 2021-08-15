@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import LoadingDotsIcon from "../components/LoadingDotsIcons";
 import { API_AXIOS_URL } from "../config";
 import Page from "../layouts/Page";
 
@@ -33,7 +34,7 @@ function ViewSinglePost(props) {
   if (loading) {
     return (
       <Page title="...">
-        <h3>Loading....</h3>
+        <LoadingDotsIcon />
       </Page>
     );
   }
