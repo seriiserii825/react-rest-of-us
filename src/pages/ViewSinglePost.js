@@ -5,6 +5,8 @@ import LoadingDotsIcon from "../components/LoadingDotsIcons";
 import { API_AXIOS_URL } from "../config";
 import Page from "../layouts/Page";
 import FormatDate from "../utils/FormatDate";
+import ReactMarkdown from "react-markdown";
+import ReactTooltip from "react-tooltip";
 
 function ViewSinglePost(props) {
   const [post, setPost] = useState({});
@@ -42,16 +44,24 @@ function ViewSinglePost(props) {
       <div className="d-flex justify-content-between">
         <h2>{post.title}</h2>
         <span className="pt-2">
-          <a href="/some" className="text-primary mr-2" title="Edit">
+          <a
+            href="/some"
+            data-tip="Edit"
+            data-for="edit"
+            className="text-primary mr-2"
+          >
             <i className="fas fa-edit"></i>
           </a>
+          <ReactTooltip id="edit" />
           <a
             href="/edit"
             className="delete-post-button text-danger"
-            title="Delete"
+            data-tip="Delete"
+            data-for="delete"
           >
             <i className="fas fa-trash"></i>
           </a>
+          <ReactTooltip id="delete" />
         </span>
       </div>
 
@@ -66,7 +76,9 @@ function ViewSinglePost(props) {
         on {FormatDate(post.createdDate)}
       </p>
 
-      <div className="body-content">{post.body}</div>
+      <div className="body-content">
+        <ReactMarkdown children={post.body} />
+      </div>
     </Page>
   );
 }
