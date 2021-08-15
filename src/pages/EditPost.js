@@ -14,17 +14,17 @@ function EditPost({ history }) {
     title: {
       value: "",
       hasError: false,
-      message: "",
+      message: "Title is empty"
     },
     body: {
       value: "",
       hasError: false,
-      message: "",
+      message: "Body is empty"
     },
     isFetching: true,
     isSaving: false,
     id: useParams().id,
-    sendCount: 0,
+    sendCount: 0
   };
 
   function ourReducer(draft, action) {
@@ -41,13 +41,29 @@ function EditPost({ history }) {
         draft.body.value = action.value;
         return;
       case "submitEvent":
-        draft.sendCount++;
+        if (!draft.title.hasError && !draft.body.hasError) {
+          draft.sendCount++;
+        }
         return;
       case "saveRequestStarted":
         draft.isSaving = true;
         return;
       case "saveRequestFinished":
         draft.isSaving = false;
+        return;
+      case "titleRule":
+        if (action.value.trim() === "") {
+          draft.title.hasError = true;
+        } else {
+          draft.title.hasError = false;
+        }
+        return;
+      case "bodyRule":
+        if (action.value.trim() === "") {
+          draft.body.hasError = true;
+        } else {
+          draft.body.hasError = false;
+        }
         return;
 
       default:
@@ -60,6 +76,8 @@ function EditPost({ history }) {
 
   function submitHandler(e) {
     e.preventDefault();
+    dispatch({ type: "titleRule", value: state.title.value });
+    dispatch({ type: "bodyRule", value: state.body.value });
     dispatch({ type: "submitEvent" });
   }
 
@@ -90,11 +108,11 @@ function EditPost({ history }) {
             await axios.post(`${API_AXIOS_URL}/post/${state.id}/edit`, {
               title: state.title.value,
               body: state.body.value,
-              token: AppState.user.token,
+              token: AppState.user.token
             });
             AppDispatch({
               type: "flashMessage",
-              value: "Post was succesfully updated",
+              value: "Post was succesfully updated"
             });
 
             dispatch({ type: "saveRequestFinished" });
@@ -115,7 +133,7 @@ function EditPost({ history }) {
     state.id,
     state.sendCount,
     AppDispatch,
-    history,
+    history
   ]);
 
   if (state.isFetching) {
@@ -138,6 +156,9 @@ function EditPost({ history }) {
             onChange={(e) =>
               dispatch({ type: "titleChange", value: e.target.value })
             }
+            onBlur={(e) =>
+              dispatch({ type: "titleRule", value: e.target.value })
+            }
             autoFocus
             name="title"
             id="post-title"
@@ -146,6 +167,11 @@ function EditPost({ history }) {
             placeholder=""
             autoComplete="off"
           />
+          {state.title.hasError && (
+            <div className="alert alert-danger small liveValidateMessage">
+              {state.title.message}
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -157,11 +183,20 @@ function EditPost({ history }) {
             onChange={(e) =>
               dispatch({ type: "bodyChange", value: e.target.value })
             }
+            onBlur={(e) =>
+              dispatch({ type: "bodyRule", value: e.target.value })
+            }
             name="body"
             id="post-body"
             className="body-content tall-textarea form-control"
             type="text"
           />
+
+          {state.body.hasError && (
+            <div className="alert alert-danger small liveValidateMessage">
+              {state.body.message}
+            </div>
+          )}
         </div>
         <button className="btn btn-primary">Update New Post</button>
       </form>
