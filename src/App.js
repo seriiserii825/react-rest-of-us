@@ -1,4 +1,4 @@
-import './App.css';
+import "./App.css";
 import Header from "./layouts/Header";
 import Footer from "./layouts/Footer";
 import HomeGuest from "./components/HomeGuest";
@@ -14,16 +14,17 @@ import DispatchContext from "./context/DispatchContext";
 import { useImmerReducer } from "use-immer";
 import { useEffect } from "react";
 import Profile from "./pages/Profile";
+import EditPost from "./pages/EditPost";
 
 function App() {
   const initialState = {
-    loggedIn: Boolean(localStorage.getItem('complexappToken')),
-    flashMessage: '',
+    loggedIn: Boolean(localStorage.getItem("complexappToken")),
+    flashMessage: "",
     user: {
-      token: localStorage.getItem('complexappToken'),
-      username: localStorage.getItem('complexappUsername')
+      token: localStorage.getItem("complexappToken"),
+      username: localStorage.getItem("complexappUsername")
     }
-  }
+  };
   const ourReducer = (draft, action) => {
     switch (action.type) {
       case "login":
@@ -39,46 +40,51 @@ function App() {
       default:
         return;
     }
-  }
+  };
 
   const [state, dispatch] = useImmerReducer(ourReducer, initialState);
 
   useEffect(() => {
     if (state.loggedIn) {
-      localStorage.setItem('complexappToken', state.user.token);
-      localStorage.setItem('complexappUsername', state.user.username);
+      localStorage.setItem("complexappToken", state.user.token);
+      localStorage.setItem("complexappUsername", state.user.username);
     } else {
-      localStorage.removeItem('complexappToken');
-      localStorage.removeItem('complexappUsername');
+      localStorage.removeItem("complexappToken");
+      localStorage.removeItem("complexappUsername");
     }
   }, [state.loggedIn, state.user.token, state.user.username]);
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
         <BrowserRouter>
-          <Header/>
-          {state.flashMessage !== '' && <FlashMessage msg={state.flashMessage}/>}
+          <Header />
+          {state.flashMessage !== "" && (
+            <FlashMessage msg={state.flashMessage} />
+          )}
           <Switch>
             <Route path="/" exact>
-              {state.loggedIn ? <Home/> : <HomeGuest/>}
+              {state.loggedIn ? <Home /> : <HomeGuest />}
             </Route>
             <Route path="/profile/:username">
-              <Profile/>
+              <Profile />
             </Route>
             <Route path="/create-post">
-              <CreatePost/>
+              <CreatePost />
             </Route>
-            <Route path="/post/:id">
-              <ViewSinglePost/>
+            <Route path="/post/:id" exact>
+              <ViewSinglePost />
+            </Route>
+            <Route path="/post/:id/edit" exact>
+              <EditPost />
             </Route>
             <Route path="/about">
-              <About/>
+              <About />
             </Route>
             <Route path="/terms">
-              <Terms/>
+              <Terms />
             </Route>
           </Switch>
-          <Footer/>
+          <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
     </StateContext.Provider>
