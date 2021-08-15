@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import Page from "../layouts/Page";
 import axios from "axios";
 import { API_AXIOS_URL } from "../config";
@@ -6,23 +6,25 @@ import { withRouter } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import LoadingDotsIcon from "../components/LoadingDotsIcons";
 import { useImmerReducer } from "use-immer";
+import StateContext from "./../context/StateContext";
+import DispatchContext from "./../context/DispatchContext";
 
 function EditPost({ history }) {
   const originalState = {
     title: {
       value: "",
       hasError: false,
-      message: ""
+      message: "",
     },
     body: {
       value: "",
       hasError: false,
-      message: ""
+      message: "",
     },
     isFetching: true,
     isSaving: false,
     id: useParams().id,
-    sendCount: 0
+    sendCount: 0,
   };
 
   function ourReducer(draft, action) {
@@ -32,11 +34,34 @@ function EditPost({ history }) {
         draft.body.value = action.value.body;
         draft.isFetching = false;
         return;
+      case "titleChange":
+        draft.title.value = action.value;
+        return;
+      case "bodyChange":
+        draft.body.value = action.value;
+        return;
+      case "submitEvent":
+        draft.sendCount++;
+        return;
+      case "saveRequestStarted":
+        draft.isSaving = true;
+        return;
+      case "saveRequestFinished":
+        draft.isSaving = false;
+        return;
+
       default:
         return;
     }
   }
   const [state, dispatch] = useImmerReducer(ourReducer, originalState);
+  const AppState = useContext(StateContext);
+  const AppDispatch = useContext(DispatchContext);
+
+  function submitHandler(e) {
+    e.preventDefault();
+    dispatch({ type: "submitEvent" });
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -55,6 +80,44 @@ function EditPost({ history }) {
     return () => (isMounted = false);
   }, [state.id, dispatch]);
 
+  useEffect(() => {
+    let isMounted = true;
+    if (state.sendCount) {
+      if (isMounted) {
+        dispatch({ type: "saveRequestStarted" });
+        async function fetchPost() {
+          try {
+            await axios.post(`${API_AXIOS_URL}/post/${state.id}/edit`, {
+              title: state.title.value,
+              body: state.body.value,
+              token: AppState.user.token,
+            });
+            AppDispatch({
+              type: "flashMessage",
+              value: "Post was succesfully updated",
+            });
+
+            dispatch({ type: "saveRequestFinished" });
+            history.push(`/post/${state.id}`);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        fetchPost();
+      }
+    }
+    return () => (isMounted = false);
+  }, [
+    AppState.user.token,
+    dispatch,
+    state.body.value,
+    state.title.value,
+    state.id,
+    state.sendCount,
+    AppDispatch,
+    history,
+  ]);
+
   if (state.isFetching) {
     return (
       <Page title="...">
@@ -65,14 +128,16 @@ function EditPost({ history }) {
 
   return (
     <Page title="Edit post">
-      <form>
+      <form onSubmit={submitHandler}>
         <div className="form-group">
           <label htmlFor="post-title" className="text-muted mb-1">
             <small>Title</small>
           </label>
           <input
             value={state.title.value}
-            onChange={(e) => console.log(e, "j")}
+            onChange={(e) =>
+              dispatch({ type: "titleChange", value: e.target.value })
+            }
             autoFocus
             name="title"
             id="post-title"
@@ -89,7 +154,9 @@ function EditPost({ history }) {
           </label>
           <textarea
             value={state.body.value}
-            onChange={(e) => console.log(e, "e")}
+            onChange={(e) =>
+              dispatch({ type: "bodyChange", value: e.target.value })
+            }
             name="body"
             id="post-body"
             className="body-content tall-textarea form-control"

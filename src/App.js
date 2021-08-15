@@ -22,8 +22,8 @@ function App() {
     flashMessage: "",
     user: {
       token: localStorage.getItem("complexappToken"),
-      username: localStorage.getItem("complexappUsername")
-    }
+      username: localStorage.getItem("complexappUsername"),
+    },
   };
   const ourReducer = (draft, action) => {
     switch (action.type) {
