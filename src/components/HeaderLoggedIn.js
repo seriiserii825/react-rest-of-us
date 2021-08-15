@@ -1,23 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
-import {withRouter} from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import DispatchContext from "../context/DispatchContext";
+import StateContext from "../context/StateContext";
+import { AVATAR } from "../config";
 
-function HeaderLoggedIn({history}) {
+function HeaderLoggedIn({ history }) {
   const AppDispatch = useContext(DispatchContext);
-  const [avatar, setAvatar] = useState('');
+  const AppState = useContext(StateContext);
 
   function handleLogin() {
-    AppDispatch({type: "logout"});
-    localStorage.removeItem('complexappToken');
-    localStorage.removeItem('complexappUsername');
-    localStorage.removeItem('complexappAvatar');
+    AppDispatch({ type: "logout" });
     history.push('/');
   }
-
-  useEffect(() => {
-    setAvatar(localStorage.getItem('complexappAvatar'));
-  }, []);
 
   return (
     <div className="flex-row my-3 my-md-0">
@@ -28,10 +23,9 @@ function HeaderLoggedIn({history}) {
             <i className="fas fa-comment"></i>
             <span className="chat-count-badge text-white"> </span>
           </span>
-      <button className="mr-2 no-button">
-        <img className="small-header-avatar" src={avatar}
-             alt=""/>
-      </button>
+      <Link to={`/profile/${AppState.user.username}`} className="mr-2 no-button">
+        <img className="small-header-avatar" src={AVATAR} alt=""/>
+      </Link>
       <Link className="btn btn-sm btn-success mr-2" to="/create-post">
         Create Post
       </Link>

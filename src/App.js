@@ -12,16 +12,23 @@ import FlashMessage from "./components/FlashMessage";
 import StateContext from "./context/StateContext";
 import DispatchContext from "./context/DispatchContext";
 import { useImmerReducer } from "use-immer";
+import { useEffect } from "react";
+import Profile from "./pages/Profile";
 
 function App() {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem('complexappToken')),
-    flashMessage: ''
+    flashMessage: '',
+    user: {
+      token: localStorage.getItem('complexappToken'),
+      username: localStorage.getItem('complexappUsername')
+    }
   }
   const ourReducer = (draft, action) => {
     switch (action.type) {
       case "login":
         draft.loggedIn = true;
+        draft.user = action.data;
         return;
       case "logout":
         draft.loggedIn = false;
@@ -33,7 +40,18 @@ function App() {
         return;
     }
   }
+
   const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+
+  useEffect(() => {
+    if (state.loggedIn) {
+      localStorage.setItem('complexappToken', state.user.token);
+      localStorage.setItem('complexappUsername', state.user.username);
+    } else {
+      localStorage.removeItem('complexappToken');
+      localStorage.removeItem('complexappUsername');
+    }
+  }, [state.loggedIn, state.user.token, state.user.username]);
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
@@ -43,6 +61,9 @@ function App() {
           <Switch>
             <Route path="/" exact>
               {state.loggedIn ? <Home/> : <HomeGuest/>}
+            </Route>
+            <Route path="/profile/:username">
+              <Profile/>
             </Route>
             <Route path="/create-post">
               <CreatePost/>
