@@ -150,7 +150,7 @@ function EditPost({ history }) {
         to={`/post/${state.id}`}
         className="text-align-right small font-weight-bold"
       >
-        &laquo; Go back to post
+        <span>&laquo; Go back to post</span>
       </Link>
       <form onSubmit={submitHandler}>
         <div className="form-group">
