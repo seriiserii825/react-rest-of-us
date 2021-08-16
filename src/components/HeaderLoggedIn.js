@@ -14,13 +14,17 @@ function HeaderLoggedIn({ history }) {
     history.push('/');
   }
 
+  function openSearch(){
+    AppDispatch({type: "openSearch"});
+  }
+
   return (
     <div className="flex-row my-3 my-md-0">
-      <button className="text-white mr-2 header-search-icon no-button">
-        <i className="fas fa-search"></i>
+      <button onClick={openSearch} className="text-white mr-2 header-search-icon no-button">
+        <i className="fas fa-search"/>
       </button>
       <span className="mr-2 header-chat-icon text-white">
-            <i className="fas fa-comment"></i>
+            <i className="fas fa-comment"/>
             <span className="chat-count-badge text-white"> </span>
           </span>
       <Link to={`/profile/${AppState.user.username}`} className="mr-2 no-button">

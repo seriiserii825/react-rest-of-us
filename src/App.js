@@ -16,6 +16,7 @@ import React, { useEffect } from "react";
 import Profile from "./pages/Profile";
 import EditPost from "./pages/EditPost";
 import NotFound from "./pages/NotFound";
+import Search from "./components/Search";
 
 function App() {
   const initialState = {
@@ -24,7 +25,8 @@ function App() {
     user: {
       token: localStorage.getItem("complexappToken"),
       username: localStorage.getItem("complexappUsername")
-    }
+    },
+    isSearchVisible: false
   };
   const ourReducer = (draft, action) => {
     switch (action.type) {
@@ -39,6 +41,12 @@ function App() {
         draft.flashMessage = action.value;
         return;
       default:
+        return;
+      case "openSearch":
+        draft.isSearchVisible = true;
+        return;
+      case "closeSearch":
+        draft.isSearchVisible = false;
         return;
     }
   };
@@ -85,6 +93,7 @@ function App() {
             <NotFound/>
           </Route>
         </Switch>
+        {state.isSearchVisible && <Search/>}
         <Footer/>
       </BrowserRouter>
     </DispatchContext.Provider>
