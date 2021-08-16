@@ -12,9 +12,10 @@ import FlashMessage from "./components/FlashMessage";
 import StateContext from "./context/StateContext";
 import DispatchContext from "./context/DispatchContext";
 import { useImmerReducer } from "use-immer";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import Profile from "./pages/Profile";
 import EditPost from "./pages/EditPost";
+import NotFound from "./pages/NotFound";
 
 function App() {
   const initialState = {
@@ -22,8 +23,8 @@ function App() {
     flashMessage: "",
     user: {
       token: localStorage.getItem("complexappToken"),
-      username: localStorage.getItem("complexappUsername"),
-    },
+      username: localStorage.getItem("complexappUsername")
+    }
   };
   const ourReducer = (draft, action) => {
     switch (action.type) {
@@ -53,42 +54,41 @@ function App() {
       localStorage.removeItem("complexappUsername");
     }
   }, [state.loggedIn, state.user.token, state.user.username]);
-  return (
-    <StateContext.Provider value={state}>
-      <DispatchContext.Provider value={dispatch}>
-        <BrowserRouter>
-          <Header />
-          {state.flashMessage !== "" && (
-            <FlashMessage msg={state.flashMessage} />
-          )}
-          <Switch>
-            <Route path="/" exact>
-              {state.loggedIn ? <Home /> : <HomeGuest />}
-            </Route>
-            <Route path="/profile/:username">
-              <Profile />
-            </Route>
-            <Route path="/create-post">
-              <CreatePost />
-            </Route>
-            <Route path="/post/:id" exact>
-              <ViewSinglePost />
-            </Route>
-            <Route path="/post/:id/edit" exact>
-              <EditPost />
-            </Route>
-            <Route path="/about">
-              <About />
-            </Route>
-            <Route path="/terms">
-              <Terms />
-            </Route>
-          </Switch>
-          <Footer />
-        </BrowserRouter>
-      </DispatchContext.Provider>
-    </StateContext.Provider>
-  );
+  return (<StateContext.Provider value={state}>
+    <DispatchContext.Provider value={dispatch}>
+      <BrowserRouter>
+        <Header/>
+        {
+          state.flashMessage !== "" && (<FlashMessage msg={state.flashMessage}/>
+          )
+        }
+        <Switch>
+          <Route path="/" exact>
+            {state.loggedIn ? <Home/> : <HomeGuest/>}
+          </Route>
+          <Route path="/profile/:username"><Profile/></Route>
+          <Route path="/create-post">
+            <CreatePost/>
+          </Route>
+          <Route path="/post/:id" exact><ViewSinglePost/></Route>
+          <Route path="/post/:id/edit" exact>
+            <EditPost/>
+          </Route>
+          <Route path="/about">
+            <About/>
+          </Route>
+          <Route
+            path="/terms">
+            <Terms/>
+          </Route>
+          <Route>
+            <NotFound/>
+          </Route>
+        </Switch>
+        <Footer/>
+      </BrowserRouter>
+    </DispatchContext.Provider>
+  </StateContext.Provider>);
 }
 
 export default App;

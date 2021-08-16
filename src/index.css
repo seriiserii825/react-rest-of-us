@@ -22,4 +22,6 @@ code {
 .display-block {
   display: block;
 }
-
+.fz-3 {
+  font-size: 4rem;
+}
