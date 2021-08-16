@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import EditPost from "./pages/EditPost";
 import NotFound from "./pages/NotFound";
 import Search from "./components/Search";
+import { CSSTransition } from "react-transition-group";
 
 function App() {
   const initialState = {
@@ -93,7 +94,9 @@ function App() {
             <NotFound/>
           </Route>
         </Switch>
-        {state.isSearchVisible && <Search/>}
+        <CSSTransition timeout={2000} in={state.isSearchVisible} classNames="search-overlay" unmountOnExit>
+          <Search/>
+        </CSSTransition>
         <Footer/>
       </BrowserRouter>
     </DispatchContext.Provider>
