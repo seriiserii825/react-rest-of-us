@@ -3,7 +3,7 @@ import Page from "../layouts/Page";
 import axios from "axios";
 import { API_AXIOS_URL } from "../config";
 import { withRouter } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import LoadingDotsIcon from "../components/LoadingDotsIcons";
 import { useImmerReducer } from "use-immer";
 import StateContext from "./../context/StateContext";
@@ -14,17 +14,17 @@ function EditPost({ history }) {
     title: {
       value: "",
       hasError: false,
-      message: "Title is empty"
+      message: "Title is empty",
     },
     body: {
       value: "",
       hasError: false,
-      message: "Body is empty"
+      message: "Body is empty",
     },
     isFetching: true,
     isSaving: false,
     id: useParams().id,
-    sendCount: 0
+    sendCount: 0,
   };
 
   function ourReducer(draft, action) {
@@ -108,11 +108,11 @@ function EditPost({ history }) {
             await axios.post(`${API_AXIOS_URL}/post/${state.id}/edit`, {
               title: state.title.value,
               body: state.body.value,
-              token: AppState.user.token
+              token: AppState.user.token,
             });
             AppDispatch({
               type: "flashMessage",
-              value: "Post was succesfully updated"
+              value: "Post was succesfully updated",
             });
 
             dispatch({ type: "saveRequestFinished" });
@@ -133,7 +133,7 @@ function EditPost({ history }) {
     state.id,
     state.sendCount,
     AppDispatch,
-    history
+    history,
   ]);
 
   if (state.isFetching) {
@@ -146,6 +146,12 @@ function EditPost({ history }) {
 
   return (
     <Page title="Edit post">
+      <Link
+        to={`/post/${state.id}`}
+        className="text-align-right small font-weight-bold"
+      >
+        &laquo; Go back to post
+      </Link>
       <form onSubmit={submitHandler}>
         <div className="form-group">
           <label htmlFor="post-title" className="text-muted mb-1">
