@@ -1,8 +1,21 @@
 import React, { useCallback, useContext, useEffect } from 'react';
 import DispatchContext from "../context/DispatchContext";
+import { useImmer } from "use-immer";
+import axios from "axios";
+import { API_AXIOS_URL } from "../config";
+import FormatDate from "../utils/FormatDate";
+import { Link } from "react-router-dom";
 
 function Search() {
   const appDispatch = useContext(DispatchContext);
+  const [state, setState] = useImmer({
+    termSearch: '',
+    searchCount: 0,
+    searchData: [],
+    searchText: '',
+    startTyping: false,
+    emptyInput: true
+  });
 
   function closeSearch() {
     appDispatch({ type: "closeSearch" });
@@ -19,6 +32,79 @@ function Search() {
     return () => document.addEventListener('keydown', closeByEsc);
   }, [closeByEsc]);
 
+  function inputHandler(e) {
+    const value = e.target.value;
+    if (value.length) {
+      setState(draft => {
+        draft.termSearch = value
+        draft.startTyping = true
+        draft.emptyInput = false
+      })
+    } else {
+      setState(draft => {
+        draft.termSearch = value
+        draft.startTyping = true
+        draft.emptyInput = true
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (state.emptyInput) {
+      setState((draft) => {
+        draft.searchData = [];
+      })
+    }
+  }, [state.emptyInput]);
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setState(draft => {
+        draft.searchCount++
+      })
+    }, 300)
+
+    return () => clearTimeout(delay);
+  }, [state.termSearch])
+
+  useEffect(() => {
+    if (state.searchCount) {
+      const ourRequest = axios.CancelToken.source();
+
+      async function fetchRequest() {
+        try {
+          const response = await axios.post(`${API_AXIOS_URL}/search`, {
+            searchTerm: state.termSearch
+          }, { cancelToken: ourRequest.token });
+          if (response.data.length > 0) {
+            setState(draft => {
+              draft.searchData = response.data;
+            })
+          } else {
+            setState(draft => {
+              draft.searchText = 'Nothing not found';
+            })
+          }
+        } catch (e) {
+          console.log(e, 'e')
+        }
+      }
+
+      fetchRequest();
+
+      return () => ourRequest.cancel();
+    }
+  }, [state.searchCount]);
+
+  function itemClickHandler() {
+    setState(draft => {
+      draft.searchData = []
+      draft.termSearch = ''
+      draft.startTyping = false
+    })
+    closeSearch();
+  }
+
   return (
     <div className="search-overlay">
       <div className="search-overlay-top shadow-sm">
@@ -26,7 +112,9 @@ function Search() {
           <label htmlFor="live-search-field" className="search-overlay-icon">
             <i className="fas fa-search"/>
           </label>
-          <input autoFocus type="text" autoComplete="off" id="live-search-field" className="live-search-field"
+          <input autoFocus onChange={inputHandler} type="text" autoComplete="off" id="live-search-field"
+                 value={state.termSearch}
+                 className="live-search-field"
                  placeholder="What are you interested in?"/>
           <span onClick={closeSearch} className="close-live-search">
             <i className="fas fa-times-circle"/>
@@ -38,13 +126,20 @@ function Search() {
         <div className="container container--narrow py-3">
           <div className="live-search-results live-search-results--visible">
             <div className="list-group shadow-sm">
-              <div className="list-group-item active"><strong>Search Results</strong> (3 items found)</div>
-              <a href="/" className="list-group-item list-group-item-action">
-                <img className="avatar-tiny" src="https://gravatar.com/avatar/b9408a09298632b5151200f3449434ef?s=128"
-                     alt=""/>
-                <strong>Example Post #1</strong>
-                <span className="text-muted small">by brad on 2/10/2020 </span>
-              </a>
+              {(!state.emptyInput && state.searchData.length) ? (
+                <div className="list-group-item active"><strong>Search Results</strong> ({state.searchData.length} items
+                  found)
+                </div>
+              ) : null}
+              {state.searchData.length ? state.searchData.map(item => (
+                <Link key={item._id} to={`/post/${item._id}`} onClick={itemClickHandler}
+                      className="list-group-item list-group-item-action">
+                  <img className="avatar-tiny" src={item.author.avatar} alt=""/>
+                  <strong>{item.title} </strong>
+                  <span
+                    className="text-muted small">by <strong>{item.author.username}</strong> on {FormatDate(item.createdDate)} </span>
+                </Link>
+              )) : null}
             </div>
           </div>
         </div>

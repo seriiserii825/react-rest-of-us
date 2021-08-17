@@ -21,11 +21,12 @@ import { CSSTransition } from "react-transition-group";
 
 function App() {
   const initialState = {
-    loggedIn: Boolean(localStorage.getItem("complexappToken")),
+    loggedIn: Boolean(localStorage.getItem("appToken")),
     flashMessage: "",
     user: {
-      token: localStorage.getItem("complexappToken"),
-      username: localStorage.getItem("complexappUsername")
+      token: localStorage.getItem("appToken"),
+      username: localStorage.getItem("appUsername"),
+      avatar: localStorage.getItem("appAvatar"),
     },
     isSearchVisible: false
   };
@@ -56,13 +57,16 @@ function App() {
 
   useEffect(() => {
     if (state.loggedIn) {
-      localStorage.setItem("complexappToken", state.user.token);
-      localStorage.setItem("complexappUsername", state.user.username);
+      localStorage.setItem("appToken", state.user.token);
+      localStorage.setItem("appUsername", state.user.username);
+      localStorage.setItem("appAvatar", state.user.avatar);
     } else {
-      localStorage.removeItem("complexappToken");
-      localStorage.removeItem("complexappUsername");
+      localStorage.removeItem("appToken");
+      localStorage.removeItem("appUsername");
+      localStorage.removeItem("appAvatar");
     }
-  }, [state.loggedIn, state.user.token, state.user.username]);
+  }, [state.loggedIn, state.user.token, state.user.username, state.user.avatar]);
+  
   return (<StateContext.Provider value={state}>
     <DispatchContext.Provider value={dispatch}>
       <BrowserRouter>

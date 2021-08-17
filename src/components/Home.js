@@ -1,10 +1,12 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import Page from "../layouts/Page";
+import StateContext from "../context/StateContext";
 
 function Home() {
+  const appState = useContext(StateContext);
   return (
     <Page title="Home">
-      <h2 className="text-center">Hello <strong>{localStorage.getItem('complexappUsername')}</strong>, your feed is empty.</h2>
+      <h2 className="text-center">Hello <strong>{appState.user.username}</strong>, your feed is empty.</h2>
       <p className="lead text-muted text-center">Your feed displays the latest posts from the people you follow. If you
         don&rsquo;t have any friends to follow that&rsquo;s okay; you can use the &ldquo;Search&rdquo; feature in the
         top

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import DispatchContext from "../context/DispatchContext";
 import StateContext from "../context/StateContext";
-import { AVATAR } from "../config";
 
 function HeaderLoggedIn({ history }) {
   const AppDispatch = useContext(DispatchContext);
@@ -14,8 +13,8 @@ function HeaderLoggedIn({ history }) {
     history.push('/');
   }
 
-  function openSearch(){
-    AppDispatch({type: "openSearch"});
+  function openSearch() {
+    AppDispatch({ type: "openSearch" });
   }
 
   return (
@@ -28,7 +27,7 @@ function HeaderLoggedIn({ history }) {
             <span className="chat-count-badge text-white"> </span>
           </span>
       <Link to={`/profile/${AppState.user.username}`} className="mr-2 no-button">
-        <img className="small-header-avatar" src={AVATAR} alt=""/>
+        <img className="small-header-avatar" src={AppState.user.avatar} alt=""/>
       </Link>
       <Link className="btn btn-sm btn-success mr-2" to="/create-post">
         Create Post
